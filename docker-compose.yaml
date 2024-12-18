@@ -1,0 +1,34 @@
+services:
+  helloapp:
+    build:
+      context: ./helloapp
+    ports:
+      - '3000:3000'
+  
+  postgres-auth:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: ${POSTGRESQL_DB}
+      POSTGRES_USER: ${POSTGRESQL_USER}
+      POSTGRES_PASSWORD: ${POSTGRESQL_PASS}
+    volumes:
+      - postgres_auth_data:/var/lib/postgresql/data
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:${KEYCLOAK_VERSION}
+    environment:
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_PORT: 8080
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USER}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASS}
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres-auth/${POSTGRESQL_DB}
+      KC_DB_USERNAME: ${POSTGRESQL_USER}
+      KC_DB_PASSWORD: ${POSTGRESQL_PASS}
+    ports:
+      - 8080:8080
+    command:
+      - start-dev
+
+volumes:
+  postgres_auth_data:

@@ -1,0 +1,6 @@
+Flask
+Authlib
+python-dotenv
+requests
+flask-oidc
+oauth2client
